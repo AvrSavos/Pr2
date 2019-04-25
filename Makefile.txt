@@ -1,0 +1,27 @@
+All: CppCheck GetDB
+CppCheck: main.cpp Change.cpp Input.cpp Delete.cpp Header.h
+	cppcheck --check-config --language=c++ --enable=all main.cpp Change.cpp Input.cpp Delete.cpp Header.h
+main.o: main.cpp
+	g++ -c main.cpp
+Input.o: Input.cpp
+	g++ -c Input.cpp
+Change.o: Change.cpp
+	g++ -c -fPIC Change.cpp
+
+libdelete.a: Delete.o
+	ar cr libdelete.a Delete.o
+
+libchange.so: Change.o 
+	g++ -shared -o libchange.so Change.o 
+
+Delete.o: Delete.cpp
+	g++ -c Delete.cpp 
+
+GetDB:  main.o Input.o Change.o libdelete.a libchange.so
+	g++ main.o Input.o -L. -lchange -Wl,-rpath,. -L. -ldelete -o GetDB
+
+
+
+
+
+
